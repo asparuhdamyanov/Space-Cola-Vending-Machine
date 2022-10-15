@@ -5,7 +5,7 @@ require("solidity-coverage");
 require("hardhat-gas-reporter");
 require("solidity-coverage");
 
-// require("hardhat-docgen");
+require("hardhat-docgen");
 
 //require("dotenv").config();
 //require("@nomiclabs/hardhat-waffle");
@@ -32,9 +32,5 @@ module.exports = {
       enabled: true,
       runs: 1000,
     },
-  },
-  gasReporter: {
-    enabled: process.env.REPORT_GAS ? true : false,
-    currency: "USD",
   },
 };

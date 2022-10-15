@@ -4,7 +4,10 @@ coverage
 coverage.json
 typechain
 typechain-types
-
+.firebase
+firebase.json
+.firebaserc
+README.md
 #Hardhat files
 cache
 artifacts

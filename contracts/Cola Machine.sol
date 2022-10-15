@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.7;
 
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./ColaERC20.sol";
 
@@ -45,12 +46,14 @@ interface DaiToken {
 }
 
 contract ColaMachine is ColaERC20, AccessControl {
+    using SafeERC20 for DaiToken;
     mapping(address => uint256) public colaBought;
     /// @notice stores the bottles, which can be returned by an Alien
     mapping(address => uint256) public bottlesBought;
     /// @notice stores the Discounted Amount used by an Alien.
     mapping(address => uint256) public addressToDiscountedAmount;
 
+    // Trusted Dai Token Address ( must be official Dai address!)
     DaiToken public daitoken;
 
     // Create a new role identifier for the operator role
@@ -90,27 +93,31 @@ contract ColaMachine is ColaERC20, AccessControl {
         daitoken = DaiToken(_daiTokenAddress);
     }
 
+    modifier buyingCola(uint32 _amount) {
+        if (_amount == 0) revert InvalidAmount();
+        if (stock < _amount) revert NotEnoughStock();
+        _;
+    }
+
     /**
      * @notice Buys Space Cola with Ethereum
      * @notice Can buy discounted Cola, if conditions are met.
      *         See _buyDiscountedCola & if Aliens buy 5 bottles at once they get a 15% discount.
      * @dev Bottles of Space Cola are represented by an ERC20 token.
      */
-    function buyColaETH(uint32 _amount) public payable returns (bool) {
-        if (_amount == 0) revert InvalidAmount();
-        if (stock < _amount) revert NotEnoughStock();
+    function buyColaETH(uint32 _amount)
+        public
+        payable
+        buyingCola(_amount)
+        returns (bool)
+    {
         uint256 _value = _amount * PRICE;
+        _value = _checkDicountedAmout(_value, _amount, PRICE);
         if (_amount != 5) {
-            if (addressToDiscountedAmount[msg.sender] != 0) {
-                _value = _buyDiscountedCola(_value, _amount, PRICE);
-            }
             if (msg.value != _value) revert InvalidValue();
             _buyCola(_amount);
             return true;
         } else {
-            if (addressToDiscountedAmount[msg.sender] != 0) {
-                _value = _buyDiscountedCola(_value, _amount, PRICE);
-            }
             uint256 _newValue = _value * 85;
             _value = _newValue / 100;
             if (msg.value != _value) revert InvalidValue();
@@ -129,6 +136,17 @@ contract ColaMachine is ColaERC20, AccessControl {
         totalColaSold += _amount;
         _transfer(address(this), msg.sender, _amount);
         emit BuyCola(msg.sender, _amount);
+    }
+
+    function _checkDicountedAmout(
+        uint256 _value,
+        uint32 _amount,
+        uint256 price
+    ) private returns (uint256) {
+        if (addressToDiscountedAmount[msg.sender] != 0) {
+            _value = _buyDiscountedCola(_value, _amount, price);
+        }
+        return _value;
     }
 
     /**
@@ -179,38 +197,35 @@ contract ColaMachine is ColaERC20, AccessControl {
      * @dev Bottles of Space Cola are represented by an ERC20 token.
      * @dev Implements buying logic with Dai following requirements.
      */
-    function buyColaDAI(uint32 _amount) public returns (bool) {
-        if (_amount == 0) revert InvalidAmount();
-        if (stock < _amount) revert NotEnoughStock();
+    function buyColaDAI(uint32 _amount)
+        public
+        buyingCola(_amount)
+        returns (bool)
+    {
         uint256 _value = _amount * PRICE_DAI;
-
+        _value = _checkDicountedAmout(_value, _amount, PRICE_DAI);
         if (_amount != 5) {
-            if (addressToDiscountedAmount[msg.sender] != 0) {
-                _value = _buyDiscountedCola(_value, _amount, PRICE_DAI);
-            }
             if (daitoken.balanceOf(msg.sender) < _value) revert InvalidValue();
+            _buyCola(_amount);
             bool success = daitoken.transferFrom(
                 msg.sender,
                 address(this),
                 _value
             );
             if (!success) revert TransactionFailed();
-            _buyCola(_amount);
             return true;
         } else {
-            if (addressToDiscountedAmount[msg.sender] != 0) {
-                _value = _buyDiscountedCola(_value, _amount, PRICE_DAI);
-            }
             uint256 _newValue = _value * 85;
             _value = _newValue / 100;
             if (daitoken.balanceOf(msg.sender) < _value) revert InvalidValue();
+            _buyCola(_amount);
             bool success = daitoken.transferFrom(
                 msg.sender,
                 address(this),
                 _value
             );
             if (!success) revert TransactionFailed();
-            _buyCola(_amount);
+
             return true;
         }
     }
@@ -252,10 +267,13 @@ contract ColaMachine is ColaERC20, AccessControl {
         returns (bool)
     {
         if (stock > 0) revert Unavailable();
-        emit PriceInETHChanged(PRICE, _newPriceInETH);
+        uint256 oldPriceETH = PRICE;
+        uint256 oldPriceDAI = PRICE_DAI;
         PRICE = _newPriceInETH;
-        emit PriceInDAIChanged(PRICE_DAI, _newPriceInDAI);
         PRICE_DAI = _newPriceInDAI;
+        emit PriceInDAIChanged(oldPriceDAI, PRICE_DAI);
+        emit PriceInETHChanged(oldPriceETH, PRICE);
+
         return true;
     }
 
@@ -367,6 +385,4 @@ contract ColaMachine is ColaERC20, AccessControl {
     {
         return totalColaSold;
     }
-
-    fallback() external payable {}
 }

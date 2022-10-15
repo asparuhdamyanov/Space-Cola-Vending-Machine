@@ -1,105 +1,34 @@
-ColaMachine.withdrawETH() (contracts/Cola Machine.sol#302-308) sends eth to arbitrary user
+ColaMachine.withdrawETH() (contracts/Cola Machine.sol#320-326) sends eth to arbitrary user
         Dangerous calls:
-        - (success) = address(msg.sender).call{value: _balance}() (contracts/Cola Machine.sol#304)
+        - (success) = address(msg.sender).call{value: _balance}() (contracts/Cola Machine.sol#322)
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#functions-that-send-ether-to-arbitrary-destinations
 
-Reentrancy in ColaMachine.buyColaDAI(uint32) (contracts/Cola Machine.sol#182-216):
+Reentrancy in ColaMachine.withdrawDAI() (contracts/Cola Machine.sol#332-340):
         External calls:
-        - success = daitoken.transferFrom(msg.sender,address(this),_value) (contracts/Cola Machine.sol#192-196)        
-        State variables written after the call(s):
-        - _buyCola(_amount) (contracts/Cola Machine.sol#198)
-                - stock -= _amount (contracts/Cola Machine.sol#126)
-Reentrancy in ColaMachine.buyColaDAI(uint32) (contracts/Cola Machine.sol#182-216):
-        External calls:
-        - success_scope_0 = daitoken.transferFrom(msg.sender,address(this),_value) (contracts/Cola Machine.sol#207-211)
-        State variables written after the call(s):
-        - _buyCola(_amount) (contracts/Cola Machine.sol#213)
-                - stock -= _amount (contracts/Cola Machine.sol#126)
-Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-1
-
-ColaMachine.buyColaETH(uint32)._value (contracts/Cola Machine.sol#102) is written in both
-        _value = _buyDiscountedCola(_value,_amount,PRICE) (contracts/Cola Machine.sol#112)
-        _value = _newValue / 100 (contracts/Cola Machine.sol#115)
-ColaMachine.buyColaDAI(uint32)._value (contracts/Cola Machine.sol#185) is written in both
-        _value = _buyDiscountedCola(_value,_amount,PRICE_DAI) (contracts/Cola Machine.sol#202)
-        _value = _newValue / 100 (contracts/Cola Machine.sol#205)
-Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#write-after-write
-
-Reentrancy in ColaMachine.buyColaDAI(uint32) (contracts/Cola Machine.sol#182-216):
-        External calls:
-        - success = daitoken.transferFrom(msg.sender,address(this),_value) (contracts/Cola Machine.sol#192-196)
-        State variables written after the call(s):
-        - _buyCola(_amount) (contracts/Cola Machine.sol#198)
-                - _balances[from] = fromBalance - amount (contracts/ColaERC20.sol#118)
-                - _balances[to] += amount (contracts/ColaERC20.sol#121)
-        - _buyCola(_amount) (contracts/Cola Machine.sol#198)
-                - bottlesBought[msg.sender] += _amount (contracts/Cola Machine.sol#128)
-        - _buyCola(_amount) (contracts/Cola Machine.sol#198)
-                - colaBought[msg.sender] += _amount (contracts/Cola Machine.sol#127)
-        - _buyCola(_amount) (contracts/Cola Machine.sol#198)
-                - totalColaSold += _amount (contracts/Cola Machine.sol#129)
-Reentrancy in ColaMachine.buyColaDAI(uint32) (contracts/Cola Machine.sol#182-216):
-        External calls:
-        - success_scope_0 = daitoken.transferFrom(msg.sender,address(this),_value) (contracts/Cola Machine.sol#207-211)
-        State variables written after the call(s):
-        - _buyCola(_amount) (contracts/Cola Machine.sol#213)
-                - _balances[from] = fromBalance - amount (contracts/ColaERC20.sol#118)
-                - _balances[to] += amount (contracts/ColaERC20.sol#121)
-        - _buyCola(_amount) (contracts/Cola Machine.sol#213)
-                - bottlesBought[msg.sender] += _amount (contracts/Cola Machine.sol#128)
-        - _buyCola(_amount) (contracts/Cola Machine.sol#213)
-                - colaBought[msg.sender] += _amount (contracts/Cola Machine.sol#127)
-        - _buyCola(_amount) (contracts/Cola Machine.sol#213)
-                - totalColaSold += _amount (contracts/Cola Machine.sol#129)
-Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-2
-
-Reentrancy in ColaMachine.buyColaDAI(uint32) (contracts/Cola Machine.sol#182-216):
-        External calls:
-        - success = daitoken.transferFrom(msg.sender,address(this),_value) (contracts/Cola Machine.sol#192-196)
+        - success = daitoken.transfer(msg.sender,_balance) (contracts/Cola Machine.sol#336)
         Event emitted after the call(s):
-        - BuyCola(msg.sender,_amount) (contracts/Cola Machine.sol#131)
-                - _buyCola(_amount) (contracts/Cola Machine.sol#198)
-        - Transfer(from,to,amount) (contracts/ColaERC20.sol#124)
-                - _buyCola(_amount) (contracts/Cola Machine.sol#198)
-Reentrancy in ColaMachine.buyColaDAI(uint32) (contracts/Cola Machine.sol#182-216):
+        - Withdraw(msg.sender,_balance) (contracts/Cola Machine.sol#338)
+Reentrancy in ColaMachine.withdrawETH() (contracts/Cola Machine.sol#320-326):
         External calls:
-        - success_scope_0 = daitoken.transferFrom(msg.sender,address(this),_value) (contracts/Cola Machine.sol#207-211)
+        - (success) = address(msg.sender).call{value: _balance}() (contracts/Cola Machine.sol#322)
         Event emitted after the call(s):
-        - BuyCola(msg.sender,_amount) (contracts/Cola Machine.sol#131)
-                - _buyCola(_amount) (contracts/Cola Machine.sol#213)
-        - Transfer(from,to,amount) (contracts/ColaERC20.sol#124)
-                - _buyCola(_amount) (contracts/Cola Machine.sol#213)
-Reentrancy in ColaMachine.withdrawDAI() (contracts/Cola Machine.sol#314-322):
-        External calls:
-        - success = daitoken.transfer(msg.sender,_balance) (contracts/Cola Machine.sol#318)
-        Event emitted after the call(s):
-        - Withdraw(msg.sender,_balance) (contracts/Cola Machine.sol#320)
-Reentrancy in ColaMachine.withdrawETH() (contracts/Cola Machine.sol#302-308):
-        External calls:
-        - (success) = address(msg.sender).call{value: _balance}() (contracts/Cola Machine.sol#304)
-        Event emitted after the call(s):
-        - Withdraw(msg.sender,_balance) (contracts/Cola Machine.sol#306)
+        - Withdraw(msg.sender,_balance) (contracts/Cola Machine.sol#324)
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#reentrancy-vulnerabilities-3
 
-Different versions of Solidity are used:
-        - Version used: ['^0.8.0', '^0.8.9']
-        - ^0.8.0 (node_modules/@openzeppelin/contracts/access/AccessControl.sol#4)
-        - ^0.8.0 (node_modules/@openzeppelin/contracts/access/IAccessControl.sol#4)
-        - ^0.8.0 (node_modules/@openzeppelin/contracts/access/Ownable.sol#4)
-        - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/Context.sol#4)
-        - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/Strings.sol#4)
-        - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol#4)
-        - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol#4)
-        - ^0.8.9 (contracts/Cola Machine.sol#2)
-Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#different-pragma-directives-are-used
+Address.verifyCallResult(bool,bytes,string) (node_modules/@openzeppelin/contracts/utils/Address.sol#201-221) uses assembly
+        - INLINE ASM (node_modules/@openzeppelin/contracts/utils/Address.sol#213-216)
+Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#assembly-usage
 
 Different versions of Solidity are used:
-        - Version used: ['0.8.7', '^0.8.0']
+        - Version used: ['0.8.7', '^0.8.0', '^0.8.1']
         - ^0.8.0 (node_modules/@openzeppelin/contracts/access/AccessControl.sol#4)
         - ^0.8.0 (node_modules/@openzeppelin/contracts/access/IAccessControl.sol#4)
         - ^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#4)
         - ^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#4)
         - ^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol#4)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol#4)
+        - ^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#4)
+        - ^0.8.1 (node_modules/@openzeppelin/contracts/utils/Address.sol#4)
         - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/Context.sol#4)
         - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/Strings.sol#4)
         - ^0.8.0 (node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol#4)
@@ -111,33 +40,39 @@ Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#differe
 
 Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/access/AccessControl.sol#4) allows old versions
 Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/access/IAccessControl.sol#4) allows old versions
-Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/access/Ownable.sol#4) allows old versions
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#4) allows old versions
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#4) allows old versions
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol#4) allows old versions
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol#4) allows old versions
+Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol#4) allows old versions
+Pragma version^0.8.1 (node_modules/@openzeppelin/contracts/utils/Address.sol#4) allows old versions
 Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/utils/Context.sol#4) allows old versions
 Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/utils/Strings.sol#4) allows old versions
 Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/utils/introspection/ERC165.sol#4) allows old versions
 Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/utils/introspection/IERC165.sol#4) allows old versions
-Pragma version^0.8.9 (contracts/Cola Machine.sol#2) necessitates a version too recent to be trusted. Consider deploying with 0.6.12/0.7.6/0.8.7
-solc-0.8.17 is not recommended for deployment
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
 
-Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol#4) allows old versions
-Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol#4) allows old versions
-Pragma version^0.8.0 (node_modules/@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol#4) allows old versions
-Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#incorrect-versions-of-solidity
-
-Low level call in ColaMachine.withdrawETH() (contracts/Cola Machine.sol#302-308):
-        - (success) = address(msg.sender).call{value: _balance}() (contracts/Cola Machine.sol#304)
+Low level call in Address.sendValue(address,uint256) (node_modules/@openzeppelin/contracts/utils/Address.sol#60-65):
+        - (success) = recipient.call{value: amount}() (node_modules/@openzeppelin/contracts/utils/Address.sol#63)
+Low level call in Address.functionCallWithValue(address,bytes,uint256,string) (node_modules/@openzeppelin/contracts/utils/Address.sol#128-139):
+        - (success,returndata) = target.call{value: value}(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#137)
+Low level call in Address.functionStaticCall(address,bytes,string) (node_modules/@openzeppelin/contracts/utils/Address.sol#157-166):
+        - (success,returndata) = target.staticcall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#164)
+Low level call in Address.functionDelegateCall(address,bytes,string) (node_modules/@openzeppelin/contracts/utils/Address.sol#184-193):
+        - (success,returndata) = target.delegatecall(data) (node_modules/@openzeppelin/contracts/utils/Address.sol#191)
+Low level call in ColaMachine.withdrawETH() (contracts/Cola Machine.sol#320-326):
+        - (success) = address(msg.sender).call{value: _balance}() (contracts/Cola Machine.sol#322)
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#low-level-calls
 
-Parameter ColaMachine.addOperator(address)._operatorAddress (contracts/Cola Machine.sol#22-23) is not in mixedCase
+Function IERC20Permit.DOMAIN_SEPARATOR() (node_modules/@openzeppelin/contracts/token/ERC20/extensions/draft-IERC20Permit.sol#59) is not in mixedCase
+Parameter ColaMachine.buyColaETH(uint32)._amount (contracts/Cola Machine.sol#108) is not in mixedCase
+Parameter ColaMachine.buyColaDAI(uint32)._amount (contracts/Cola Machine.sol#200) is not in mixedCase
+Parameter ColaMachine.returnBottle(uint256)._amount (contracts/Cola Machine.sol#238) is not in mixedCase
+Parameter ColaMachine.addStock(uint32)._amount (contracts/Cola Machine.sol#252) is not in mixedCase
+Parameter ColaMachine.setPrice(uint256,uint256)._newPriceInETH (contracts/Cola Machine.sol#264) is not in mixedCase
+Parameter ColaMachine.setPrice(uint256,uint256)._newPriceInDAI (contracts/Cola Machine.sol#264) is not in mixedCase
+Parameter ColaMachine.addOperator(address)._operatorAddress (contracts/Cola Machine.sol#286) is not in mixedCase
+Variable ColaMachine.PRICE (contracts/Cola Machine.sol#64) is not in mixedCase
+Variable ColaMachine.PRICE_DAI (contracts/Cola Machine.sol#65) is not in mixedCase
 Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
-
-Parameter ColaMachine.buyColaETH(uint32)._amount (contracts/Cola Machine.sol#99) is not in mixedCase
-Parameter ColaMachine.buyColaDAI(uint32)._amount (contracts/Cola Machine.sol#182) is not in mixedCase
-Parameter ColaMachine.returnBottle(uint256)._amount (contracts/Cola Machine.sol#223) is not in mixedCase
-Parameter ColaMachine.addStock(uint32)._amount (contracts/Cola Machine.sol#237) is not in mixedCase
-Parameter ColaMachine.setPrice(uint256,uint256)._newPriceInETH (contracts/Cola Machine.sol#249) is not in mixedCase
-Parameter ColaMachine.setPrice(uint256,uint256)._newPriceInDAI (contracts/Cola Machine.sol#249) is not in mixedCase
-Variable ColaMachine.PRICE (contracts/Cola Machine.sol#61) is not in mixedCase
-Variable ColaMachine.PRICE_DAI (contracts/Cola Machine.sol#62) is not in mixedCase
-Reference: https://github.com/crytic/slither/wiki/Detector-Documentation#conformance-to-solidity-naming-conventions
+. analyzed (16 contracts with 80 detectors), 32 result(s) found
