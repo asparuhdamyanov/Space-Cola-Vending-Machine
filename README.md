@@ -9,6 +9,20 @@
 
 **You want to sell bottles of Space Cola to aliens in the metaverse...**
 
+## Technologies
+
+* **ERC20** tokens representing cola bottles! They are minted and burned by the machine.
+
+* Implemented **Dai** and created a Dai Mock for testing
+
+* Added **OpenZeppelin**'s **SafeERC20** for *Dai* token and future Stablecoin transfers. (some of which are non ERC20 complient!)
+
+* Implemented **OpenZeppelin**'s **Acess Control** for Operators
+
+* **Hardhat** enviroment. **Ethers.js** , **Chai** , **Slither**, **Gas reporter**
+<br>Thorough Hardhat tests, covering 93%.<br>
+Smart contract best practices and patterns are used.
+
 ## Implementation
 **The Space Cola Vending Machine consists of 3 entities The Vending Machine, The Aliens and The Operators.**
 
@@ -59,13 +73,7 @@ The Cola Machine is a Solidity smart contract that implements the following func
 
 * Aliens can buy 5 bottles at once and get a 15% discount.
 
-## Technologies
 
-* Implemented **Dai** and created a Dai Mock for testing
-
-* Added **SafeERC20** for *Dai* token and future Stablecoin transfers. (some of which are non ERC20 complient!)
-
-* Implemented OpenZeppelin's **Acess Control** for Operators
 
 ## Notes
 
@@ -76,7 +84,7 @@ Implementation is aimed at scaling for future stablecoin updates like Teather an
 Currently the machine is ERC20 complient, but Operators must know that it's intended for Dai only.
 
 Have fun and remember to initialize the correct Dai token address!
-
+<br>~~*DANGER THE MACHINE DOES A LOT OF MATH o_O*~~ <br>
 ## Contracts
 
 ### Cola Machine.sol
