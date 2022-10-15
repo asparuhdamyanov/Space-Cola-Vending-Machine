@@ -85,16 +85,12 @@ Currently the machine is ERC20 complient, but Operators must know that it's inte
 
 Have fun and remember to initialize the correct Dai token address!
 <br>~~*DANGER THE MACHINE DOES A LOT OF MATH o_O*~~ <br>
+
 ## Contracts
 
 ### Cola Machine.sol
 
-Allows buying Space Cola with Eth and Dai
-
-Implements ERC20 from ColaERC20.sol, which mints and burns SCBT tokens
-when purchasing/returning bottles of Cola
-
-Implements AccessControl for role regulation
+Implements main logic.
 
 ### ColaERC20.sol
 
@@ -104,6 +100,8 @@ Implements IERC20 contract logic
 
 A mock contract used for creating local tests.
 
+Contracts and Natspec:
+https://spacecolavendingmachine.web.app/#/
 
 ## Setup
 
