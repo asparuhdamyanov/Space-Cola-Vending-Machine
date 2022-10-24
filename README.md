@@ -1,5 +1,6 @@
 ## https://spacecolavendingmachine.web.app/#/
 # The Space Cola Vending Machine
+Payments with ETH and Dai, ERC20, Ethers, Chai, OpenZeppelin libraries and much more!
 ## Storyline
 **It is the year 3033. Humans and aliens live and thrive together in the Great Cosmic Metaverse.**
 
